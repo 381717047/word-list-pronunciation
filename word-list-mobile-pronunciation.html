@@ -1,0 +1,742 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0f766e">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <title>English Word Lists 1-7 - Tap to Pronounce</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #12212b;
+      --muted: #5b6b75;
+      --teal: #0f766e;
+      --teal-dark: #115e59;
+      --teal-soft: #ccfbf1;
+      --line: #dbe5e8;
+      --surface: #ffffff;
+      --page: #f4f8f8;
+      --shadow: 0 8px 26px rgba(15, 118, 110, 0.08);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      min-width: 320px;
+      background: var(--page);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .page {
+      width: min(100% - 24px, 1180px);
+      margin: 0 auto;
+      padding: max(18px, env(safe-area-inset-top)) 0 max(28px, env(safe-area-inset-bottom));
+    }
+
+    .hero {
+      padding: 22px 4px 18px;
+      text-align: center;
+    }
+
+    h1 {
+      margin: 0;
+      color: var(--teal-dark);
+      font-size: clamp(1.7rem, 6vw, 2.45rem);
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+    }
+
+    .subtitle {
+      max-width: 640px;
+      margin: 10px auto 0;
+      color: var(--muted);
+      font-size: 0.98rem;
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin: 14px auto 0;
+    }
+
+    .control-button {
+      min-height: 44px;
+      padding: 9px 16px;
+      border: 1px solid var(--teal);
+      border-radius: 999px;
+      background: var(--surface);
+      color: var(--teal-dark);
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .control-button:active { transform: translateY(1px); }
+    .control-button:focus-visible, .word:focus-visible {
+      outline: 3px solid #f59e0b;
+      outline-offset: 2px;
+    }
+
+    #speech-status {
+      min-height: 1.5em;
+      margin: 8px 4px 0;
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
+
+    .word-list {
+      margin: 14px 0;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: var(--surface);
+      box-shadow: var(--shadow);
+      scroll-margin-top: 12px;
+    }
+
+    .word-list h2 {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 8px;
+      margin: 0 0 13px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--line);
+      color: var(--teal-dark);
+      font-size: 1.2rem;
+      line-height: 1.25;
+    }
+
+    .word-count {
+      color: var(--muted);
+      font-size: 0.78rem;
+      font-weight: 500;
+    }
+
+    .word-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(145px, 100%), 1fr));
+      gap: 9px;
+    }
+
+    .word {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 46px;
+      width: 100%;
+      padding: 9px 10px;
+      border: 1px solid #d6e7e5;
+      border-radius: 10px;
+      background: #f8fffe;
+      color: #17343b;
+      font: inherit;
+      font-size: 0.98rem;
+      line-height: 1.2;
+      text-align: center;
+      overflow-wrap: anywhere;
+      cursor: pointer;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+      transition: background-color 140ms ease, border-color 140ms ease, color 140ms ease, transform 140ms ease;
+    }
+
+    .word:hover, .word.is-speaking {
+      border-color: var(--teal);
+      background: var(--teal-soft);
+      color: var(--teal-dark);
+    }
+
+    .word:active { transform: scale(0.98); }
+
+    footer {
+      padding: 16px 4px 0;
+      color: var(--muted);
+      font-size: 0.82rem;
+      text-align: center;
+    }
+
+    @media (min-width: 640px) {
+      .page { width: min(100% - 40px, 1180px); padding-top: 32px; }
+      .word-list { padding: 20px; }
+      .word-grid { grid-template-columns: repeat(auto-fit, minmax(155px, 1fr)); gap: 10px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0.01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="hero">
+      <h1>English Word Lists 1-7</h1>
+      <p class="subtitle">Tap any word to hear its English pronunciation. The buttons are sized for comfortable phone use.</p>
+      <div class="controls" aria-label="Pronunciation controls">
+        <button class="control-button" id="stop-speaking" type="button">Stop speaking</button>
+      </div>
+      <p id="speech-status" role="status" aria-live="polite">Ready - tap a word to hear it.</p>
+    </header>
+
+    <div id="lists">
+      <section class="word-list" aria-labelledby="word-list-1">
+        <h2 id="word-list-1">Word List 1 <span class="word-count">61 words</span></h2>
+        <div class="word-grid">
+          <button class="word" type="button" data-word="abandon" aria-label="Play pronunciation: abandon">abandon</button>
+          <button class="word" type="button" data-word="abnormal" aria-label="Play pronunciation: abnormal">abnormal</button>
+          <button class="word" type="button" data-word="aboard" aria-label="Play pronunciation: aboard">aboard</button>
+          <button class="word" type="button" data-word="abolish" aria-label="Play pronunciation: abolish">abolish</button>
+          <button class="word" type="button" data-word="abrupt" aria-label="Play pronunciation: abrupt">abrupt</button>
+          <button class="word" type="button" data-word="absolute" aria-label="Play pronunciation: absolute">absolute</button>
+          <button class="word" type="button" data-word="absorb" aria-label="Play pronunciation: absorb">absorb</button>
+          <button class="word" type="button" data-word="abstract" aria-label="Play pronunciation: abstract">abstract</button>
+          <button class="word" type="button" data-word="absurd" aria-label="Play pronunciation: absurd">absurd</button>
+          <button class="word" type="button" data-word="abundant" aria-label="Play pronunciation: abundant">abundant</button>
+          <button class="word" type="button" data-word="academic" aria-label="Play pronunciation: academic">academic</button>
+          <button class="word" type="button" data-word="accept" aria-label="Play pronunciation: accept">accept</button>
+          <button class="word" type="button" data-word="access" aria-label="Play pronunciation: access">access</button>
+          <button class="word" type="button" data-word="accommodation" aria-label="Play pronunciation: accommodation">accommodation</button>
+          <button class="word" type="button" data-word="accompany" aria-label="Play pronunciation: accompany">accompany</button>
+          <button class="word" type="button" data-word="accomplish" aria-label="Play pronunciation: accomplish">accomplish</button>
+          <button class="word" type="button" data-word="according" aria-label="Play pronunciation: according">according</button>
+          <button class="word" type="button" data-word="account" aria-label="Play pronunciation: account">account</button>
+          <button class="word" type="button" data-word="accountant" aria-label="Play pronunciation: accountant">accountant</button>
+          <button class="word" type="button" data-word="accumulate" aria-label="Play pronunciation: accumulate">accumulate</button>
+          <button class="word" type="button" data-word="accurate" aria-label="Play pronunciation: accurate">accurate</button>
+          <button class="word" type="button" data-word="accuse" aria-label="Play pronunciation: accuse">accuse</button>
+          <button class="word" type="button" data-word="accustom" aria-label="Play pronunciation: accustom">accustom</button>
+          <button class="word" type="button" data-word="achieve" aria-label="Play pronunciation: achieve">achieve</button>
+          <button class="word" type="button" data-word="acknowledge" aria-label="Play pronunciation: acknowledge">acknowledge</button>
+          <button class="word" type="button" data-word="acquaintance" aria-label="Play pronunciation: acquaintance">acquaintance</button>
+          <button class="word" type="button" data-word="acquire" aria-label="Play pronunciation: acquire">acquire</button>
+          <button class="word" type="button" data-word="act" aria-label="Play pronunciation: act">act</button>
+          <button class="word" type="button" data-word="active" aria-label="Play pronunciation: active">active</button>
+          <button class="word" type="button" data-word="actual" aria-label="Play pronunciation: actual">actual</button>
+          <button class="word" type="button" data-word="adapt" aria-label="Play pronunciation: adapt">adapt</button>
+          <button class="word" type="button" data-word="adjust" aria-label="Play pronunciation: adjust">adjust</button>
+          <button class="word" type="button" data-word="administrate" aria-label="Play pronunciation: administrate">administrate</button>
+          <button class="word" type="button" data-word="admire" aria-label="Play pronunciation: admire">admire</button>
+          <button class="word" type="button" data-word="admit" aria-label="Play pronunciation: admit">admit</button>
+          <button class="word" type="button" data-word="adopt" aria-label="Play pronunciation: adopt">adopt</button>
+          <button class="word" type="button" data-word="adore" aria-label="Play pronunciation: adore">adore</button>
+          <button class="word" type="button" data-word="adult" aria-label="Play pronunciation: adult">adult</button>
+          <button class="word" type="button" data-word="advance" aria-label="Play pronunciation: advance">advance</button>
+          <button class="word" type="button" data-word="advantage" aria-label="Play pronunciation: advantage">advantage</button>
+          <button class="word" type="button" data-word="adventure" aria-label="Play pronunciation: adventure">adventure</button>
+          <button class="word" type="button" data-word="advertise" aria-label="Play pronunciation: advertise">advertise</button>
+          <button class="word" type="button" data-word="advise" aria-label="Play pronunciation: advise">advise</button>
+          <button class="word" type="button" data-word="advocate" aria-label="Play pronunciation: advocate">advocate</button>
+          <button class="word" type="button" data-word="afraid" aria-label="Play pronunciation: afraid">afraid</button>
+          <button class="word" type="button" data-word="agency" aria-label="Play pronunciation: agency">agency</button>
+          <button class="word" type="button" data-word="aggressive" aria-label="Play pronunciation: aggressive">aggressive</button>
+          <button class="word" type="button" data-word="agriculture" aria-label="Play pronunciation: agriculture">agriculture</button>
+          <button class="word" type="button" data-word="album" aria-label="Play pronunciation: album">album</button>
+          <button class="word" type="button" data-word="alcohol" aria-label="Play pronunciation: alcohol">alcohol</button>
+          <button class="word" type="button" data-word="alert" aria-label="Play pronunciation: alert">alert</button>
+          <button class="word" type="button" data-word="algae" aria-label="Play pronunciation: algae">algae</button>
+          <button class="word" type="button" data-word="algebra" aria-label="Play pronunciation: algebra">algebra</button>
+          <button class="word" type="button" data-word="alien" aria-label="Play pronunciation: alien">alien</button>
+          <button class="word" type="button" data-word="allergy" aria-label="Play pronunciation: allergy">allergy</button>
+          <button class="word" type="button" data-word="alliance" aria-label="Play pronunciation: alliance">alliance</button>
+          <button class="word" type="button" data-word="allocate" aria-label="Play pronunciation: allocate">allocate</button>
+          <button class="word" type="button" data-word="allow" aria-label="Play pronunciation: allow">allow</button>
+          <button class="word" type="button" data-word="allowance" aria-label="Play pronunciation: allowance">allowance</button>
+          <button class="word" type="button" data-word="alpha" aria-label="Play pronunciation: alpha">alpha</button>
+          <button class="word" type="button" data-word="alphabet" aria-label="Play pronunciation: alphabet">alphabet</button>
+        </div>
+      </section>
+      <section class="word-list" aria-labelledby="word-list-2">
+        <h2 id="word-list-2">Word List 2 <span class="word-count">63 words</span></h2>
+        <div class="word-grid">
+          <button class="word" type="button" data-word="alternative" aria-label="Play pronunciation: alternative">alternative</button>
+          <button class="word" type="button" data-word="altitude" aria-label="Play pronunciation: altitude">altitude</button>
+          <button class="word" type="button" data-word="amateur" aria-label="Play pronunciation: amateur">amateur</button>
+          <button class="word" type="button" data-word="amaze" aria-label="Play pronunciation: amaze">amaze</button>
+          <button class="word" type="button" data-word="ambition" aria-label="Play pronunciation: ambition">ambition</button>
+          <button class="word" type="button" data-word="ambulance" aria-label="Play pronunciation: ambulance">ambulance</button>
+          <button class="word" type="button" data-word="amount" aria-label="Play pronunciation: amount">amount</button>
+          <button class="word" type="button" data-word="ample" aria-label="Play pronunciation: ample">ample</button>
+          <button class="word" type="button" data-word="amuse" aria-label="Play pronunciation: amuse">amuse</button>
+          <button class="word" type="button" data-word="analysis" aria-label="Play pronunciation: analysis">analysis</button>
+          <button class="word" type="button" data-word="ancestor" aria-label="Play pronunciation: ancestor">ancestor</button>
+          <button class="word" type="button" data-word="anchor" aria-label="Play pronunciation: anchor">anchor</button>
+          <button class="word" type="button" data-word="ancient" aria-label="Play pronunciation: ancient">ancient</button>
+          <button class="word" type="button" data-word="angle" aria-label="Play pronunciation: angle">angle</button>
+          <button class="word" type="button" data-word="animate" aria-label="Play pronunciation: animate">animate</button>
+          <button class="word" type="button" data-word="animated" aria-label="Play pronunciation: animated">animated</button>
+          <button class="word" type="button" data-word="ankle" aria-label="Play pronunciation: ankle">ankle</button>
+          <button class="word" type="button" data-word="anniversary" aria-label="Play pronunciation: anniversary">anniversary</button>
+          <button class="word" type="button" data-word="announce" aria-label="Play pronunciation: announce">announce</button>
+          <button class="word" type="button" data-word="annoy" aria-label="Play pronunciation: annoy">annoy</button>
+          <button class="word" type="button" data-word="annual" aria-label="Play pronunciation: annual">annual</button>
+          <button class="word" type="button" data-word="anonymous" aria-label="Play pronunciation: anonymous">anonymous</button>
+          <button class="word" type="button" data-word="ant" aria-label="Play pronunciation: ant">ant</button>
+          <button class="word" type="button" data-word="Antarctic" aria-label="Play pronunciation: Antarctic">Antarctic</button>
+          <button class="word" type="button" data-word="antelope" aria-label="Play pronunciation: antelope">antelope</button>
+          <button class="word" type="button" data-word="anthology" aria-label="Play pronunciation: anthology">anthology</button>
+          <button class="word" type="button" data-word="antique" aria-label="Play pronunciation: antique">antique</button>
+          <button class="word" type="button" data-word="anxious" aria-label="Play pronunciation: anxious">anxious</button>
+          <button class="word" type="button" data-word="anymore" aria-label="Play pronunciation: anymore">anymore</button>
+          <button class="word" type="button" data-word="apartment" aria-label="Play pronunciation: apartment">apartment</button>
+          <button class="word" type="button" data-word="apologize" aria-label="Play pronunciation: apologize">apologize</button>
+          <button class="word" type="button" data-word="apparent" aria-label="Play pronunciation: apparent">apparent</button>
+          <button class="word" type="button" data-word="appeal" aria-label="Play pronunciation: appeal">appeal</button>
+          <button class="word" type="button" data-word="appear" aria-label="Play pronunciation: appear">appear</button>
+          <button class="word" type="button" data-word="appetite" aria-label="Play pronunciation: appetite">appetite</button>
+          <button class="word" type="button" data-word="appetizer" aria-label="Play pronunciation: appetizer">appetizer</button>
+          <button class="word" type="button" data-word="applaud" aria-label="Play pronunciation: applaud">applaud</button>
+          <button class="word" type="button" data-word="appliance" aria-label="Play pronunciation: appliance">appliance</button>
+          <button class="word" type="button" data-word="applicant" aria-label="Play pronunciation: applicant">applicant</button>
+          <button class="word" type="button" data-word="apply" aria-label="Play pronunciation: apply">apply</button>
+          <button class="word" type="button" data-word="appointment" aria-label="Play pronunciation: appointment">appointment</button>
+          <button class="word" type="button" data-word="appreciate" aria-label="Play pronunciation: appreciate">appreciate</button>
+          <button class="word" type="button" data-word="approach" aria-label="Play pronunciation: approach">approach</button>
+          <button class="word" type="button" data-word="appropriate" aria-label="Play pronunciation: appropriate">appropriate</button>
+          <button class="word" type="button" data-word="approve" aria-label="Play pronunciation: approve">approve</button>
+          <button class="word" type="button" data-word="approximate" aria-label="Play pronunciation: approximate">approximate</button>
+          <button class="word" type="button" data-word="apron" aria-label="Play pronunciation: apron">apron</button>
+          <button class="word" type="button" data-word="aquarium" aria-label="Play pronunciation: aquarium">aquarium</button>
+          <button class="word" type="button" data-word="Arabic" aria-label="Play pronunciation: Arabic">Arabic</button>
+          <button class="word" type="button" data-word="arbitrary" aria-label="Play pronunciation: arbitrary">arbitrary</button>
+          <button class="word" type="button" data-word="arch" aria-label="Play pronunciation: arch">arch</button>
+          <button class="word" type="button" data-word="archaeologist" aria-label="Play pronunciation: archaeologist">archaeologist</button>
+          <button class="word" type="button" data-word="architect" aria-label="Play pronunciation: architect">architect</button>
+          <button class="word" type="button" data-word="architecture" aria-label="Play pronunciation: architecture">architecture</button>
+          <button class="word" type="button" data-word="Arctic" aria-label="Play pronunciation: Arctic">Arctic</button>
+          <button class="word" type="button" data-word="arduous" aria-label="Play pronunciation: arduous">arduous</button>
+          <button class="word" type="button" data-word="argue" aria-label="Play pronunciation: argue">argue</button>
+          <button class="word" type="button" data-word="arithmetic" aria-label="Play pronunciation: arithmetic">arithmetic</button>
+          <button class="word" type="button" data-word="arrange" aria-label="Play pronunciation: arrange">arrange</button>
+          <button class="word" type="button" data-word="array" aria-label="Play pronunciation: array">array</button>
+          <button class="word" type="button" data-word="arrest" aria-label="Play pronunciation: arrest">arrest</button>
+          <button class="word" type="button" data-word="arrogant" aria-label="Play pronunciation: arrogant">arrogant</button>
+          <button class="word" type="button" data-word="arrow" aria-label="Play pronunciation: arrow">arrow</button>
+        </div>
+      </section>
+      <section class="word-list" aria-labelledby="word-list-3">
+        <h2 id="word-list-3">Word List 3 <span class="word-count">57 words</span></h2>
+        <div class="word-grid">
+          <button class="word" type="button" data-word="article" aria-label="Play pronunciation: article">article</button>
+          <button class="word" type="button" data-word="artificial" aria-label="Play pronunciation: artificial">artificial</button>
+          <button class="word" type="button" data-word="ascertain" aria-label="Play pronunciation: ascertain">ascertain</button>
+          <button class="word" type="button" data-word="ash" aria-label="Play pronunciation: ash">ash</button>
+          <button class="word" type="button" data-word="ashamed" aria-label="Play pronunciation: ashamed">ashamed</button>
+          <button class="word" type="button" data-word="Asia" aria-label="Play pronunciation: Asia">Asia</button>
+          <button class="word" type="button" data-word="assault" aria-label="Play pronunciation: assault">assault</button>
+          <button class="word" type="button" data-word="assembly" aria-label="Play pronunciation: assembly">assembly</button>
+          <button class="word" type="button" data-word="assert" aria-label="Play pronunciation: assert">assert</button>
+          <button class="word" type="button" data-word="assess" aria-label="Play pronunciation: assess">assess</button>
+          <button class="word" type="button" data-word="assign" aria-label="Play pronunciation: assign">assign</button>
+          <button class="word" type="button" data-word="assimilate" aria-label="Play pronunciation: assimilate">assimilate</button>
+          <button class="word" type="button" data-word="assistant" aria-label="Play pronunciation: assistant">assistant</button>
+          <button class="word" type="button" data-word="assume" aria-label="Play pronunciation: assume">assume</button>
+          <button class="word" type="button" data-word="astonish" aria-label="Play pronunciation: astonish">astonish</button>
+          <button class="word" type="button" data-word="astronaut" aria-label="Play pronunciation: astronaut">astronaut</button>
+          <button class="word" type="button" data-word="astronomy" aria-label="Play pronunciation: astronomy">astronomy</button>
+          <button class="word" type="button" data-word="atmosphere" aria-label="Play pronunciation: atmosphere">atmosphere</button>
+          <button class="word" type="button" data-word="atom" aria-label="Play pronunciation: atom">atom</button>
+          <button class="word" type="button" data-word="attach" aria-label="Play pronunciation: attach">attach</button>
+          <button class="word" type="button" data-word="attempt" aria-label="Play pronunciation: attempt">attempt</button>
+          <button class="word" type="button" data-word="attitude" aria-label="Play pronunciation: attitude">attitude</button>
+          <button class="word" type="button" data-word="attorney" aria-label="Play pronunciation: attorney">attorney</button>
+          <button class="word" type="button" data-word="attract" aria-label="Play pronunciation: attract">attract</button>
+          <button class="word" type="button" data-word="audience" aria-label="Play pronunciation: audience">audience</button>
+          <button class="word" type="button" data-word="authentic" aria-label="Play pronunciation: authentic">authentic</button>
+          <button class="word" type="button" data-word="author" aria-label="Play pronunciation: author">author</button>
+          <button class="word" type="button" data-word="authority" aria-label="Play pronunciation: authority">authority</button>
+          <button class="word" type="button" data-word="automatic" aria-label="Play pronunciation: automatic">automatic</button>
+          <button class="word" type="button" data-word="available" aria-label="Play pronunciation: available">available</button>
+          <button class="word" type="button" data-word="avenue" aria-label="Play pronunciation: avenue">avenue</button>
+          <button class="word" type="button" data-word="average" aria-label="Play pronunciation: average">average</button>
+          <button class="word" type="button" data-word="avoid" aria-label="Play pronunciation: avoid">avoid</button>
+          <button class="word" type="button" data-word="award" aria-label="Play pronunciation: award">award</button>
+          <button class="word" type="button" data-word="aware" aria-label="Play pronunciation: aware">aware</button>
+          <button class="word" type="button" data-word="awesome" aria-label="Play pronunciation: awesome">awesome</button>
+          <button class="word" type="button" data-word="awkward" aria-label="Play pronunciation: awkward">awkward</button>
+          <button class="word" type="button" data-word="azure" aria-label="Play pronunciation: azure">azure</button>
+          <button class="word" type="button" data-word="babble" aria-label="Play pronunciation: babble">babble</button>
+          <button class="word" type="button" data-word="bachelor" aria-label="Play pronunciation: bachelor">bachelor</button>
+          <button class="word" type="button" data-word="background" aria-label="Play pronunciation: background">background</button>
+          <button class="word" type="button" data-word="backpack" aria-label="Play pronunciation: backpack">backpack</button>
+          <button class="word" type="button" data-word="backward" aria-label="Play pronunciation: backward">backward</button>
+          <button class="word" type="button" data-word="backyard" aria-label="Play pronunciation: backyard">backyard</button>
+          <button class="word" type="button" data-word="baggage" aria-label="Play pronunciation: baggage">baggage</button>
+          <button class="word" type="button" data-word="bake" aria-label="Play pronunciation: bake">bake</button>
+          <button class="word" type="button" data-word="balance" aria-label="Play pronunciation: balance">balance</button>
+          <button class="word" type="button" data-word="balcony" aria-label="Play pronunciation: balcony">balcony</button>
+          <button class="word" type="button" data-word="ballet" aria-label="Play pronunciation: ballet">ballet</button>
+          <button class="word" type="button" data-word="balloon" aria-label="Play pronunciation: balloon">balloon</button>
+          <button class="word" type="button" data-word="ballpoint" aria-label="Play pronunciation: ballpoint">ballpoint</button>
+          <button class="word" type="button" data-word="ban" aria-label="Play pronunciation: ban">ban</button>
+          <button class="word" type="button" data-word="banal" aria-label="Play pronunciation: banal">banal</button>
+          <button class="word" type="button" data-word="band" aria-label="Play pronunciation: band">band</button>
+          <button class="word" type="button" data-word="bandage" aria-label="Play pronunciation: bandage">bandage</button>
+          <button class="word" type="button" data-word="bang" aria-label="Play pronunciation: bang">bang</button>
+          <button class="word" type="button" data-word="barbecue" aria-label="Play pronunciation: barbecue">barbecue</button>
+        </div>
+      </section>
+      <section class="word-list" aria-labelledby="word-list-4">
+        <h2 id="word-list-4">Word List 4 <span class="word-count">51 words</span></h2>
+        <div class="word-grid">
+          <button class="word" type="button" data-word="bald" aria-label="Play pronunciation: bald">bald</button>
+          <button class="word" type="button" data-word="bare" aria-label="Play pronunciation: bare">bare</button>
+          <button class="word" type="button" data-word="barely" aria-label="Play pronunciation: barely">barely</button>
+          <button class="word" type="button" data-word="bargain" aria-label="Play pronunciation: bargain">bargain</button>
+          <button class="word" type="button" data-word="barn" aria-label="Play pronunciation: barn">barn</button>
+          <button class="word" type="button" data-word="barrier" aria-label="Play pronunciation: barrier">barrier</button>
+          <button class="word" type="button" data-word="baseball" aria-label="Play pronunciation: baseball">baseball</button>
+          <button class="word" type="button" data-word="basement" aria-label="Play pronunciation: basement">basement</button>
+          <button class="word" type="button" data-word="basic" aria-label="Play pronunciation: basic">basic</button>
+          <button class="word" type="button" data-word="basket" aria-label="Play pronunciation: basket">basket</button>
+          <button class="word" type="button" data-word="bat" aria-label="Play pronunciation: bat">bat</button>
+          <button class="word" type="button" data-word="bathe" aria-label="Play pronunciation: bathe">bathe</button>
+          <button class="word" type="button" data-word="bathrobe" aria-label="Play pronunciation: bathrobe">bathrobe</button>
+          <button class="word" type="button" data-word="bathtub" aria-label="Play pronunciation: bathtub">bathtub</button>
+          <button class="word" type="button" data-word="battle" aria-label="Play pronunciation: battle">battle</button>
+          <button class="word" type="button" data-word="bay" aria-label="Play pronunciation: bay">bay</button>
+          <button class="word" type="button" data-word="beam" aria-label="Play pronunciation: beam">beam</button>
+          <button class="word" type="button" data-word="beancurd" aria-label="Play pronunciation: beancurd">beancurd</button>
+          <button class="word" type="button" data-word="beard" aria-label="Play pronunciation: beard">beard</button>
+          <button class="word" type="button" data-word="beast" aria-label="Play pronunciation: beast">beast</button>
+          <button class="word" type="button" data-word="beat" aria-label="Play pronunciation: beat">beat</button>
+          <button class="word" type="button" data-word="bedclothes" aria-label="Play pronunciation: bedclothes">bedclothes</button>
+          <button class="word" type="button" data-word="beddings" aria-label="Play pronunciation: beddings">beddings</button>
+          <button class="word" type="button" data-word="beehive" aria-label="Play pronunciation: beehive">beehive</button>
+          <button class="word" type="button" data-word="beetle" aria-label="Play pronunciation: beetle">beetle</button>
+          <button class="word" type="button" data-word="beg" aria-label="Play pronunciation: beg">beg</button>
+          <button class="word" type="button" data-word="behave" aria-label="Play pronunciation: behave">behave</button>
+          <button class="word" type="button" data-word="behalf" aria-label="Play pronunciation: behalf">behalf</button>
+          <button class="word" type="button" data-word="belly" aria-label="Play pronunciation: belly">belly</button>
+          <button class="word" type="button" data-word="belong" aria-label="Play pronunciation: belong">belong</button>
+          <button class="word" type="button" data-word="belt" aria-label="Play pronunciation: belt">belt</button>
+          <button class="word" type="button" data-word="bench" aria-label="Play pronunciation: bench">bench</button>
+          <button class="word" type="button" data-word="bend" aria-label="Play pronunciation: bend">bend</button>
+          <button class="word" type="button" data-word="beneath" aria-label="Play pronunciation: beneath">beneath</button>
+          <button class="word" type="button" data-word="benefit" aria-label="Play pronunciation: benefit">benefit</button>
+          <button class="word" type="button" data-word="beret" aria-label="Play pronunciation: beret">beret</button>
+          <button class="word" type="button" data-word="berry" aria-label="Play pronunciation: berry">berry</button>
+          <button class="word" type="button" data-word="beside" aria-label="Play pronunciation: beside">beside</button>
+          <button class="word" type="button" data-word="best-seller" aria-label="Play pronunciation: best-seller">best-seller</button>
+          <button class="word" type="button" data-word="betray" aria-label="Play pronunciation: betray">betray</button>
+          <button class="word" type="button" data-word="beyond" aria-label="Play pronunciation: beyond">beyond</button>
+          <button class="word" type="button" data-word="biased" aria-label="Play pronunciation: biased">biased</button>
+          <button class="word" type="button" data-word="bid" aria-label="Play pronunciation: bid">bid</button>
+          <button class="word" type="button" data-word="bike" aria-label="Play pronunciation: bike">bike</button>
+          <button class="word" type="button" data-word="bill" aria-label="Play pronunciation: bill">bill</button>
+          <button class="word" type="button" data-word="billion" aria-label="Play pronunciation: billion">billion</button>
+          <button class="word" type="button" data-word="bingo" aria-label="Play pronunciation: bingo">bingo</button>
+          <button class="word" type="button" data-word="biochemistry" aria-label="Play pronunciation: biochemistry">biochemistry</button>
+          <button class="word" type="button" data-word="biography" aria-label="Play pronunciation: biography">biography</button>
+          <button class="word" type="button" data-word="biology" aria-label="Play pronunciation: biology">biology</button>
+          <button class="word" type="button" data-word="biometric" aria-label="Play pronunciation: biometric">biometric</button>
+        </div>
+      </section>
+      <section class="word-list" aria-labelledby="word-list-5">
+        <h2 id="word-list-5">Word List 5 <span class="word-count">51 words</span></h2>
+        <div class="word-grid">
+          <button class="word" type="button" data-word="bite" aria-label="Play pronunciation: bite">bite</button>
+          <button class="word" type="button" data-word="bitter" aria-label="Play pronunciation: bitter">bitter</button>
+          <button class="word" type="button" data-word="bizarre" aria-label="Play pronunciation: bizarre">bizarre</button>
+          <button class="word" type="button" data-word="blame" aria-label="Play pronunciation: blame">blame</button>
+          <button class="word" type="button" data-word="blank" aria-label="Play pronunciation: blank">blank</button>
+          <button class="word" type="button" data-word="blanket" aria-label="Play pronunciation: blanket">blanket</button>
+          <button class="word" type="button" data-word="bleach" aria-label="Play pronunciation: bleach">bleach</button>
+          <button class="word" type="button" data-word="blend" aria-label="Play pronunciation: blend">blend</button>
+          <button class="word" type="button" data-word="bless" aria-label="Play pronunciation: bless">bless</button>
+          <button class="word" type="button" data-word="blind" aria-label="Play pronunciation: blind">blind</button>
+          <button class="word" type="button" data-word="block" aria-label="Play pronunciation: block">block</button>
+          <button class="word" type="button" data-word="blog" aria-label="Play pronunciation: blog">blog</button>
+          <button class="word" type="button" data-word="bloom" aria-label="Play pronunciation: bloom">bloom</button>
+          <button class="word" type="button" data-word="blow" aria-label="Play pronunciation: blow">blow</button>
+          <button class="word" type="button" data-word="board" aria-label="Play pronunciation: board">board</button>
+          <button class="word" type="button" data-word="boil" aria-label="Play pronunciation: boil">boil</button>
+          <button class="word" type="button" data-word="bond" aria-label="Play pronunciation: bond">bond</button>
+          <button class="word" type="button" data-word="bookcase" aria-label="Play pronunciation: bookcase">bookcase</button>
+          <button class="word" type="button" data-word="booklet" aria-label="Play pronunciation: booklet">booklet</button>
+          <button class="word" type="button" data-word="bookmark" aria-label="Play pronunciation: bookmark">bookmark</button>
+          <button class="word" type="button" data-word="bore" aria-label="Play pronunciation: bore">bore</button>
+          <button class="word" type="button" data-word="boring" aria-label="Play pronunciation: boring">boring</button>
+          <button class="word" type="button" data-word="botany" aria-label="Play pronunciation: botany">botany</button>
+          <button class="word" type="button" data-word="bounce" aria-label="Play pronunciation: bounce">bounce</button>
+          <button class="word" type="button" data-word="bound" aria-label="Play pronunciation: bound">bound</button>
+          <button class="word" type="button" data-word="bowl" aria-label="Play pronunciation: bowl">bowl</button>
+          <button class="word" type="button" data-word="bowling" aria-label="Play pronunciation: bowling">bowling</button>
+          <button class="word" type="button" data-word="boxing" aria-label="Play pronunciation: boxing">boxing</button>
+          <button class="word" type="button" data-word="boycott" aria-label="Play pronunciation: boycott">boycott</button>
+          <button class="word" type="button" data-word="brake" aria-label="Play pronunciation: brake">brake</button>
+          <button class="word" type="button" data-word="branch" aria-label="Play pronunciation: branch">branch</button>
+          <button class="word" type="button" data-word="brand" aria-label="Play pronunciation: brand">brand</button>
+          <button class="word" type="button" data-word="brave" aria-label="Play pronunciation: brave">brave</button>
+          <button class="word" type="button" data-word="break" aria-label="Play pronunciation: break">break</button>
+          <button class="word" type="button" data-word="breakthrough" aria-label="Play pronunciation: breakthrough">breakthrough</button>
+          <button class="word" type="button" data-word="breast" aria-label="Play pronunciation: breast">breast</button>
+          <button class="word" type="button" data-word="breathe" aria-label="Play pronunciation: breathe">breathe</button>
+          <button class="word" type="button" data-word="breed" aria-label="Play pronunciation: breed">breed</button>
+          <button class="word" type="button" data-word="breeze" aria-label="Play pronunciation: breeze">breeze</button>
+          <button class="word" type="button" data-word="bribe" aria-label="Play pronunciation: bribe">bribe</button>
+          <button class="word" type="button" data-word="bride" aria-label="Play pronunciation: bride">bride</button>
+          <button class="word" type="button" data-word="bridegroom" aria-label="Play pronunciation: bridegroom">bridegroom</button>
+          <button class="word" type="button" data-word="brief" aria-label="Play pronunciation: brief">brief</button>
+          <button class="word" type="button" data-word="brilliant" aria-label="Play pronunciation: brilliant">brilliant</button>
+          <button class="word" type="button" data-word="broadcast" aria-label="Play pronunciation: broadcast">broadcast</button>
+          <button class="word" type="button" data-word="broaden" aria-label="Play pronunciation: broaden">broaden</button>
+          <button class="word" type="button" data-word="broccoli" aria-label="Play pronunciation: broccoli">broccoli</button>
+          <button class="word" type="button" data-word="brochure" aria-label="Play pronunciation: brochure">brochure</button>
+          <button class="word" type="button" data-word="broom" aria-label="Play pronunciation: broom">broom</button>
+          <button class="word" type="button" data-word="bruise" aria-label="Play pronunciation: bruise">bruise</button>
+          <button class="word" type="button" data-word="brush" aria-label="Play pronunciation: brush">brush</button>
+        </div>
+      </section>
+      <section class="word-list" aria-labelledby="word-list-6">
+        <h2 id="word-list-6">Word List 6 <span class="word-count">81 words</span></h2>
+        <div class="word-grid">
+          <button class="word" type="button" data-word="bubble" aria-label="Play pronunciation: bubble">bubble</button>
+          <button class="word" type="button" data-word="bucket" aria-label="Play pronunciation: bucket">bucket</button>
+          <button class="word" type="button" data-word="buckle" aria-label="Play pronunciation: buckle">buckle</button>
+          <button class="word" type="button" data-word="Buddhism" aria-label="Play pronunciation: Buddhism">Buddhism</button>
+          <button class="word" type="button" data-word="budget" aria-label="Play pronunciation: budget">budget</button>
+          <button class="word" type="button" data-word="buffet" aria-label="Play pronunciation: buffet">buffet</button>
+          <button class="word" type="button" data-word="bug" aria-label="Play pronunciation: bug">bug</button>
+          <button class="word" type="button" data-word="bulb" aria-label="Play pronunciation: bulb">bulb</button>
+          <button class="word" type="button" data-word="bulge" aria-label="Play pronunciation: bulge">bulge</button>
+          <button class="word" type="button" data-word="bump" aria-label="Play pronunciation: bump">bump</button>
+          <button class="word" type="button" data-word="bunch" aria-label="Play pronunciation: bunch">bunch</button>
+          <button class="word" type="button" data-word="burden" aria-label="Play pronunciation: burden">burden</button>
+          <button class="word" type="button" data-word="bureaucratic" aria-label="Play pronunciation: bureaucratic">bureaucratic</button>
+          <button class="word" type="button" data-word="burglar" aria-label="Play pronunciation: burglar">burglar</button>
+          <button class="word" type="button" data-word="bury" aria-label="Play pronunciation: bury">bury</button>
+          <button class="word" type="button" data-word="businessman" aria-label="Play pronunciation: businessman">businessman</button>
+          <button class="word" type="button" data-word="butcher" aria-label="Play pronunciation: butcher">butcher</button>
+          <button class="word" type="button" data-word="butterfly" aria-label="Play pronunciation: butterfly">butterfly</button>
+          <button class="word" type="button" data-word="button" aria-label="Play pronunciation: button">button</button>
+          <button class="word" type="button" data-word="cab" aria-label="Play pronunciation: cab">cab</button>
+          <button class="word" type="button" data-word="cabbage" aria-label="Play pronunciation: cabbage">cabbage</button>
+          <button class="word" type="button" data-word="cabin" aria-label="Play pronunciation: cabin">cabin</button>
+          <button class="word" type="button" data-word="cabinet" aria-label="Play pronunciation: cabinet">cabinet</button>
+          <button class="word" type="button" data-word="cable" aria-label="Play pronunciation: cable">cable</button>
+          <button class="word" type="button" data-word="cafe" aria-label="Play pronunciation: cafe">cafe</button>
+          <button class="word" type="button" data-word="cafeteria" aria-label="Play pronunciation: cafeteria">cafeteria</button>
+          <button class="word" type="button" data-word="caffeine" aria-label="Play pronunciation: caffeine">caffeine</button>
+          <button class="word" type="button" data-word="cage" aria-label="Play pronunciation: cage">cage</button>
+          <button class="word" type="button" data-word="Cairo" aria-label="Play pronunciation: Cairo">Cairo</button>
+          <button class="word" type="button" data-word="calculate" aria-label="Play pronunciation: calculate">calculate</button>
+          <button class="word" type="button" data-word="calligraphy" aria-label="Play pronunciation: calligraphy">calligraphy</button>
+          <button class="word" type="button" data-word="calm" aria-label="Play pronunciation: calm">calm</button>
+          <button class="word" type="button" data-word="calorie" aria-label="Play pronunciation: calorie">calorie</button>
+          <button class="word" type="button" data-word="camel" aria-label="Play pronunciation: camel">camel</button>
+          <button class="word" type="button" data-word="camera" aria-label="Play pronunciation: camera">camera</button>
+          <button class="word" type="button" data-word="camp" aria-label="Play pronunciation: camp">camp</button>
+          <button class="word" type="button" data-word="campaign" aria-label="Play pronunciation: campaign">campaign</button>
+          <button class="word" type="button" data-word="campsite" aria-label="Play pronunciation: campsite">campsite</button>
+          <button class="word" type="button" data-word="canal" aria-label="Play pronunciation: canal">canal</button>
+          <button class="word" type="button" data-word="cancel" aria-label="Play pronunciation: cancel">cancel</button>
+          <button class="word" type="button" data-word="cancer" aria-label="Play pronunciation: cancer">cancer</button>
+          <button class="word" type="button" data-word="candidate" aria-label="Play pronunciation: candidate">candidate</button>
+          <button class="word" type="button" data-word="candle" aria-label="Play pronunciation: candle">candle</button>
+          <button class="word" type="button" data-word="candy" aria-label="Play pronunciation: candy">candy</button>
+          <button class="word" type="button" data-word="cane" aria-label="Play pronunciation: cane">cane</button>
+          <button class="word" type="button" data-word="canteen" aria-label="Play pronunciation: canteen">canteen</button>
+          <button class="word" type="button" data-word="canvas" aria-label="Play pronunciation: canvas">canvas</button>
+          <button class="word" type="button" data-word="cap" aria-label="Play pronunciation: cap">cap</button>
+          <button class="word" type="button" data-word="capital" aria-label="Play pronunciation: capital">capital</button>
+          <button class="word" type="button" data-word="capoeira" aria-label="Play pronunciation: capoeira">capoeira</button>
+          <button class="word" type="button" data-word="capsule" aria-label="Play pronunciation: capsule">capsule</button>
+          <button class="word" type="button" data-word="captain" aria-label="Play pronunciation: captain">captain</button>
+          <button class="word" type="button" data-word="caption" aria-label="Play pronunciation: caption">caption</button>
+          <button class="word" type="button" data-word="captivity" aria-label="Play pronunciation: captivity">captivity</button>
+          <button class="word" type="button" data-word="caravan" aria-label="Play pronunciation: caravan">caravan</button>
+          <button class="word" type="button" data-word="carbon" aria-label="Play pronunciation: carbon">carbon</button>
+          <button class="word" type="button" data-word="carcass" aria-label="Play pronunciation: carcass">carcass</button>
+          <button class="word" type="button" data-word="cardboard" aria-label="Play pronunciation: cardboard">cardboard</button>
+          <button class="word" type="button" data-word="career" aria-label="Play pronunciation: career">career</button>
+          <button class="word" type="button" data-word="carnival" aria-label="Play pronunciation: carnival">carnival</button>
+          <button class="word" type="button" data-word="carnivore" aria-label="Play pronunciation: carnivore">carnivore</button>
+          <button class="word" type="button" data-word="carpenter" aria-label="Play pronunciation: carpenter">carpenter</button>
+          <button class="word" type="button" data-word="carpet" aria-label="Play pronunciation: carpet">carpet</button>
+          <button class="word" type="button" data-word="carriage" aria-label="Play pronunciation: carriage">carriage</button>
+          <button class="word" type="button" data-word="carrier" aria-label="Play pronunciation: carrier">carrier</button>
+          <button class="word" type="button" data-word="carrot" aria-label="Play pronunciation: carrot">carrot</button>
+          <button class="word" type="button" data-word="cartoon" aria-label="Play pronunciation: cartoon">cartoon</button>
+          <button class="word" type="button" data-word="carve" aria-label="Play pronunciation: carve">carve</button>
+          <button class="word" type="button" data-word="case" aria-label="Play pronunciation: case">case</button>
+          <button class="word" type="button" data-word="cash" aria-label="Play pronunciation: cash">cash</button>
+          <button class="word" type="button" data-word="cassette" aria-label="Play pronunciation: cassette">cassette</button>
+          <button class="word" type="button" data-word="cast" aria-label="Play pronunciation: cast">cast</button>
+          <button class="word" type="button" data-word="castle" aria-label="Play pronunciation: castle">castle</button>
+          <button class="word" type="button" data-word="casual" aria-label="Play pronunciation: casual">casual</button>
+          <button class="word" type="button" data-word="catalogue" aria-label="Play pronunciation: catalogue">catalogue</button>
+          <button class="word" type="button" data-word="catastrophe" aria-label="Play pronunciation: catastrophe">catastrophe</button>
+          <button class="word" type="button" data-word="category" aria-label="Play pronunciation: category">category</button>
+          <button class="word" type="button" data-word="cater" aria-label="Play pronunciation: cater">cater</button>
+          <button class="word" type="button" data-word="cathedral" aria-label="Play pronunciation: cathedral">cathedral</button>
+          <button class="word" type="button" data-word="catholic" aria-label="Play pronunciation: catholic">catholic</button>
+          <button class="word" type="button" data-word="cattle" aria-label="Play pronunciation: cattle">cattle</button>
+        </div>
+      </section>
+      <section class="word-list" aria-labelledby="word-list-7">
+        <h2 id="word-list-7">Word List 7 <span class="word-count">55 words</span></h2>
+        <div class="word-grid">
+          <button class="word" type="button" data-word="caution" aria-label="Play pronunciation: caution">caution</button>
+          <button class="word" type="button" data-word="cave" aria-label="Play pronunciation: cave">cave</button>
+          <button class="word" type="button" data-word="cavern" aria-label="Play pronunciation: cavern">cavern</button>
+          <button class="word" type="button" data-word="ceiling" aria-label="Play pronunciation: ceiling">ceiling</button>
+          <button class="word" type="button" data-word="celebrate" aria-label="Play pronunciation: celebrate">celebrate</button>
+          <button class="word" type="button" data-word="cell" aria-label="Play pronunciation: cell">cell</button>
+          <button class="word" type="button" data-word="cellar" aria-label="Play pronunciation: cellar">cellar</button>
+          <button class="word" type="button" data-word="cello" aria-label="Play pronunciation: cello">cello</button>
+          <button class="word" type="button" data-word="centigrade" aria-label="Play pronunciation: centigrade">centigrade</button>
+          <button class="word" type="button" data-word="centimeter" aria-label="Play pronunciation: centimeter">centimeter</button>
+          <button class="word" type="button" data-word="central" aria-label="Play pronunciation: central">central</button>
+          <button class="word" type="button" data-word="ceremony" aria-label="Play pronunciation: ceremony">ceremony</button>
+          <button class="word" type="button" data-word="certificate" aria-label="Play pronunciation: certificate">certificate</button>
+          <button class="word" type="button" data-word="chain" aria-label="Play pronunciation: chain">chain</button>
+          <button class="word" type="button" data-word="chalk" aria-label="Play pronunciation: chalk">chalk</button>
+          <button class="word" type="button" data-word="challenge" aria-label="Play pronunciation: challenge">challenge</button>
+          <button class="word" type="button" data-word="chamber" aria-label="Play pronunciation: chamber">chamber</button>
+          <button class="word" type="button" data-word="champion" aria-label="Play pronunciation: champion">champion</button>
+          <button class="word" type="button" data-word="chance" aria-label="Play pronunciation: chance">chance</button>
+          <button class="word" type="button" data-word="changeable" aria-label="Play pronunciation: changeable">changeable</button>
+          <button class="word" type="button" data-word="chant" aria-label="Play pronunciation: chant">chant</button>
+          <button class="word" type="button" data-word="chaos" aria-label="Play pronunciation: chaos">chaos</button>
+          <button class="word" type="button" data-word="chapter" aria-label="Play pronunciation: chapter">chapter</button>
+          <button class="word" type="button" data-word="character" aria-label="Play pronunciation: character">character</button>
+          <button class="word" type="button" data-word="characteristic" aria-label="Play pronunciation: characteristic">characteristic</button>
+          <button class="word" type="button" data-word="charge" aria-label="Play pronunciation: charge">charge</button>
+          <button class="word" type="button" data-word="chart" aria-label="Play pronunciation: chart">chart</button>
+          <button class="word" type="button" data-word="chat" aria-label="Play pronunciation: chat">chat</button>
+          <button class="word" type="button" data-word="cheat" aria-label="Play pronunciation: cheat">cheat</button>
+          <button class="word" type="button" data-word="cheek" aria-label="Play pronunciation: cheek">cheek</button>
+          <button class="word" type="button" data-word="cheer" aria-label="Play pronunciation: cheer">cheer</button>
+          <button class="word" type="button" data-word="cherry" aria-label="Play pronunciation: cherry">cherry</button>
+          <button class="word" type="button" data-word="chess" aria-label="Play pronunciation: chess">chess</button>
+          <button class="word" type="button" data-word="chew" aria-label="Play pronunciation: chew">chew</button>
+          <button class="word" type="button" data-word="chief" aria-label="Play pronunciation: chief">chief</button>
+          <button class="word" type="button" data-word="childish" aria-label="Play pronunciation: childish">childish</button>
+          <button class="word" type="button" data-word="chill" aria-label="Play pronunciation: chill">chill</button>
+          <button class="word" type="button" data-word="chimney" aria-label="Play pronunciation: chimney">chimney</button>
+          <button class="word" type="button" data-word="chimpanzee" aria-label="Play pronunciation: chimpanzee">chimpanzee</button>
+          <button class="word" type="button" data-word="choir" aria-label="Play pronunciation: choir">choir</button>
+          <button class="word" type="button" data-word="choke" aria-label="Play pronunciation: choke">choke</button>
+          <button class="word" type="button" data-word="chopsticks" aria-label="Play pronunciation: chopsticks">chopsticks</button>
+          <button class="word" type="button" data-word="chore" aria-label="Play pronunciation: chore">chore</button>
+          <button class="word" type="button" data-word="chorus" aria-label="Play pronunciation: chorus">chorus</button>
+          <button class="word" type="button" data-word="chromosome" aria-label="Play pronunciation: chromosome">chromosome</button>
+          <button class="word" type="button" data-word="cigar" aria-label="Play pronunciation: cigar">cigar</button>
+          <button class="word" type="button" data-word="cigarette" aria-label="Play pronunciation: cigarette">cigarette</button>
+          <button class="word" type="button" data-word="circle" aria-label="Play pronunciation: circle">circle</button>
+          <button class="word" type="button" data-word="circuit" aria-label="Play pronunciation: circuit">circuit</button>
+          <button class="word" type="button" data-word="circulate" aria-label="Play pronunciation: circulate">circulate</button>
+          <button class="word" type="button" data-word="circumstance" aria-label="Play pronunciation: circumstance">circumstance</button>
+          <button class="word" type="button" data-word="circus" aria-label="Play pronunciation: circus">circus</button>
+          <button class="word" type="button" data-word="citizen" aria-label="Play pronunciation: citizen">citizen</button>
+          <button class="word" type="button" data-word="citronella" aria-label="Play pronunciation: citronella">citronella</button>
+          <button class="word" type="button" data-word="civilization" aria-label="Play pronunciation: civilization">civilization</button>
+        </div>
+      </section>
+
+    </div>
+
+    <footer>Uses your device's built-in Web Speech API. If no voice is available, check the browser's language and sound settings.</footer>
+  </main>
+
+  <script>
+    (() => {
+      'use strict';
+
+      const synth = window.speechSynthesis || null;
+      const status = document.getElementById('speech-status');
+      const stopButton = document.getElementById('stop-speaking');
+      const wordButtons = Array.from(document.querySelectorAll('.word'));
+      let voices = [];
+      let activeButton = null;
+
+      const setStatus = (message) => {
+        status.textContent = message;
+      };
+
+      const clearActive = () => {
+        if (activeButton) activeButton.classList.remove('is-speaking');
+        activeButton = null;
+      };
+
+      const loadVoices = () => {
+        voices = typeof synth.getVoices === 'function' ? synth.getVoices() : [];
+      };
+
+      const chooseVoice = () => voices.find((voice) => /^en-US$/i.test(voice.lang))
+        || voices.find((voice) => /^en-/i.test(voice.lang))
+        || null;
+
+      const speakWord = (word, button) => {
+        if (!synth || typeof window.SpeechSynthesisUtterance !== 'function') {
+          setStatus('Speech is unavailable here. Try Safari/Chrome with device sound enabled.');
+          return;
+        }
+
+        // iOS Safari can leave the speech queue paused after the first tap.
+        synth.cancel();
+        if (typeof synth.resume === 'function') synth.resume();
+        clearActive();
+        activeButton = button;
+        activeButton.classList.add('is-speaking');
+
+        const utterance = new SpeechSynthesisUtterance(word);
+        utterance.lang = 'en-US';
+        utterance.rate = 0.9;
+        utterance.pitch = 1;
+        utterance.volume = 1;
+        const voice = chooseVoice();
+        if (voice) utterance.voice = voice;
+        utterance.onstart = () => setStatus('Speaking: ' + word);
+        utterance.onend = () => {
+          clearActive();
+          setStatus('Finished: ' + word);
+        };
+        utterance.onerror = (event) => {
+          clearActive();
+          if (event.error === 'canceled' || event.error === 'interrupted') return;
+          setStatus('No sound played. Check Silent mode, media volume, and browser speech settings.');
+        };
+
+        // Keep speak() in the tap/click call stack for iPhone Safari user-gesture rules.
+        synth.speak(utterance);
+        // A second resume is needed by some iPhone Safari versions, but keep it
+        // outside the tap handler only as a queue-unblocking fallback.
+        window.setTimeout(() => {
+          if (synth.paused && typeof synth.resume === 'function') synth.resume();
+        }, 80);
+      };
+
+      wordButtons.forEach((button) => {
+        button.addEventListener('click', () => speakWord(button.dataset.word || button.textContent.trim(), button));
+      });
+
+      stopButton.addEventListener('click', () => {
+        if (synth) synth.cancel();
+        clearActive();
+        setStatus('Stopped. Tap a word to hear it again.');
+      });
+
+      if (!synth || typeof window.SpeechSynthesisUtterance !== 'function') {
+        setStatus('Speech is unavailable here. Try Safari/Chrome with device sound enabled.');
+        stopButton.disabled = true;
+      } else {
+        loadVoices();
+        if (typeof synth.addEventListener === 'function') synth.addEventListener('voiceschanged', loadVoices);
+      }
+    })();
+  </script>
+</body>
+</html>
